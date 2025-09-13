@@ -1,0 +1,4 @@
+name: SpleefElimCredit
+version: 'v0.0.1'
+main: me.colonelneon.spleefElimCredit.SpleefElimCredit
+api-version: '1.21'
