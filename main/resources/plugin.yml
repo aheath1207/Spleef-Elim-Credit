@@ -1,6 +1,7 @@
 name: SpleefElimCredit
-version: 'v0.0.2'
+version: 'v0.0.3'
 main: me.colonelneon.spleefElimCredit.SpleefElimCredit
 api-version: '1.21'
 author: ColonelNeon
 description: Code or Plugin to be used within a Spleef GameMode that gives elimination credit for deaths.
+load: STARTUP

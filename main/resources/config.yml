@@ -1,0 +1,9 @@
+# Configuration for SpleefElimCredit
+# Plugin by ColonelNeon
+
+# Format for messages: "%s was killed by %s"
+
+messages:
+  death_by_hit_credit: "💀 %s was eliminated by %s."
+  death_by_marker_credit: "💀 %s fell because of %s."
+  death_unknown: "💀 %s was eliminated."

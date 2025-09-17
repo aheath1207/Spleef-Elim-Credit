@@ -1,5 +1,6 @@
 package me.colonelneon.spleefElimCredit.manager;
 
+import me.colonelneon.spleefElimCredit.SpleefElimCredit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -95,23 +96,24 @@ public class PlayerManager {
         // Priority number one, checked first and will award credit if the marker is less than 5 seconds old (This avoids kills being awarded to people that hit players into holes that other players have made as the victim player is falling)
         if (markerOwner != null && markerAge <= 5000) { // 5 seconds (YES I need this conversion so I dont get confused)
             creditPlayer = markerOwner;
-            creditReason = "Recent block broken (" + (markerAge / 1000.0) + "s ago)";
+            creditReason = "death_by_marker";
         }
         // Priority number two, checks if the victim player was hit by another player within the last 10 seconds - i'm hoping that it takes less than 10 seconds for a player to fall to their death...
         else if (lastHitData != null && lastHitData.isWithinTimeLimit(currentTime, 10000)) { // 10 seconds (AGAIN I need these conversions please don't come after me)
             creditPlayer = lastHitData.getAttacker();
-            creditReason = "Recent attack (" + ((currentTime - lastHitData.getTimestamp()) / 1000.0) + "s ago)";
+            creditReason = "death_by_attack";
         }
         // Priority number three, fallback elim credit
         else if (markerOwner != null) {
             creditPlayer = markerOwner;
-            creditReason = "marker owner (fallback)";
+            creditReason = "death_by_marker";
         }
 
         // Gives elim credit!
         if (creditPlayer != null) {
 //        if (creditPlayer != null && creditPlayer != player) {
             awardEliminationCredit(creditPlayer, player, creditReason);
+            Bukkit.getLogger().info("Elim credit given");
         } else {
             Bukkit.getLogger().warning("No elimination credit could be determined for " + player.getName() + "'s death");
         }
@@ -136,7 +138,19 @@ public class PlayerManager {
     // This no joke just sends a message to everyone in chat announcing deaths and showing elim credit - its chilly
     private static void awardEliminationCredit(Player creditPlayer, Player eliminatedPlayer, String reason) {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            player.sendMessage(eliminatedPlayer.getName() + " Was eliminated by " + creditPlayer.getName() + "!");
+            switch (reason) {
+                case "unknown":
+                    String unk = String.format(SpleefElimCredit.getPlugin().getConfig().getString("messages.death_unknown"), eliminatedPlayer.getName());
+                    player.sendMessage(unk);
+                case "death_by_hit":
+                    String dbh = String.format(SpleefElimCredit.getPlugin().getConfig().getString("messages.death_by_hit_credit"), eliminatedPlayer.getName(), creditPlayer.getName());
+                    player.sendMessage(dbh);
+                case "death_by_marker":
+                    String dbm = String.format(SpleefElimCredit.getPlugin().getConfig().getString("messages.death_by_marker_credit"), eliminatedPlayer.getName(), creditPlayer.getName());
+                    player.sendMessage(dbm);
+            }
+            String message = String.format(SpleefElimCredit.getPlugin().getConfig().getString("messages.death_by_hit_credit"), eliminatedPlayer.getName(), creditPlayer.getName());
+            player.sendMessage(message);
         }
     }
 }
